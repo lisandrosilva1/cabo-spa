@@ -120,6 +120,10 @@
   .spa-cat-header.open .spa-cat-chevron{ transform:rotate(180deg); }
   .spa-cat-body{ display:none; padding:6px 24px 20px; }
   .spa-cat-body.open{ display:block; }
+  /* Las filas estáticas (tools/menu-visible.mjs) se ven sin JavaScript;
+     buildAccordion() las sustituye por el acordeón cuando el script corre. */
+  .spa-cat-body--static{ display:block; }
+  .spa-static-dur{ font-family:'Playfair Display'; font-size:14px; color:var(--gold-soft); text-align:right; flex-shrink:0; }
   .spa-item-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 0; border-top:1px solid var(--line); flex-wrap:wrap; }
   .spa-item-row:first-child{ border-top:none; }
   .spa-item-name{ font-size:13.5px; flex:1; min-width:160px; }
@@ -261,7 +265,41 @@
       <p style="margin-left:auto;margin-right:auto;">All sessions are performed in the comfort of your villa by licensed, experienced therapists.</p>
     </div>
 
-    <div class="spa-accordion" id="spaAccordion"></div>
+    <div class="spa-accordion" id="spaAccordion">
+      <!-- MENU:START generado por tools/menu-visible.mjs desde SPA_MENU — no editar a mano -->
+      <div class="spa-cat-header"><span class="spa-cat-title">Massages</span></div>
+      <div class="spa-cat-body spa-cat-body--static">
+        <div class="spa-item-row"><span class="spa-item-name">Swedish Massage</span><span class="spa-static-dur">60m $156 · 90m $216</span></div>
+        <div class="spa-item-row"><span class="spa-item-name">Deep Tissue Massage</span><span class="spa-static-dur">60m $156 · 90m $216</span></div>
+        <div class="spa-item-row"><span class="spa-item-name">Sport Massage</span><span class="spa-static-dur">60m $156 · 90m $216</span></div>
+        <div class="spa-item-row"><span class="spa-item-name">Aromatherapy Massage</span><span class="spa-static-dur">60m $156 · 90m $216</span></div>
+        <div class="spa-item-row"><span class="spa-item-name">Hot Stone Massage</span><span class="spa-static-dur">60m $180 · 90m $240</span></div>
+        <div class="spa-item-row"><span class="spa-item-name">Personalized Massage</span><span class="spa-static-dur">60m $156 · 90m $216</span></div>
+        <div class="spa-item-row"><span class="spa-item-name">Pregnancy Massage</span><span class="spa-static-dur">60m $156 · 90m $216</span></div>
+        <div class="spa-item-row"><span class="spa-item-name">Back, Shoulder &amp; Neck (30 min)</span><span class="spa-static-dur">$96</span></div>
+        <div class="spa-item-row"><span class="spa-item-name">Reflexology (30 min)</span><span class="spa-static-dur">$96</span></div>
+      </div>
+      <div class="spa-cat-header"><span class="spa-cat-title">Facials &amp; Body</span></div>
+      <div class="spa-cat-body spa-cat-body--static">
+        <div class="spa-item-row"><span class="spa-item-name">Cleansing Facial</span><span class="spa-static-dur">$174</span></div>
+        <div class="spa-item-row"><span class="spa-item-name">Anti-Aging Facial (90 min)</span><span class="spa-static-dur">$228</span></div>
+        <div class="spa-item-row"><span class="spa-item-name">Body Scrub (30 min)</span><span class="spa-static-dur">$96</span></div>
+        <div class="spa-item-row"><span class="spa-item-name">Body Wrap</span><span class="spa-static-dur">$168</span></div>
+      </div>
+      <div class="spa-cat-header"><span class="spa-cat-title">Nail Care</span></div>
+      <div class="spa-cat-body spa-cat-body--static">
+        <div class="spa-item-row"><span class="spa-item-name">Manicure</span><span class="spa-static-dur">$66</span></div>
+        <div class="spa-item-row"><span class="spa-item-name">Pedicure</span><span class="spa-static-dur">$79</span></div>
+        <div class="spa-item-row"><span class="spa-item-name">Manicure + Pedicure Combo</span><span class="spa-static-dur">$144</span></div>
+      </div>
+      <div class="spa-cat-header"><span class="spa-cat-title">Combo Packages</span></div>
+      <div class="spa-cat-body spa-cat-body--static">
+        <div class="spa-item-row"><span class="spa-item-name">Combo 1 — 60min Massage + 30min Body Scrub</span><span class="spa-static-dur">$228</span></div>
+        <div class="spa-item-row"><span class="spa-item-name">Combo 2 — 30min Back + 30min Scrub + 30min Facial</span><span class="spa-static-dur">$228</span></div>
+        <div class="spa-item-row"><span class="spa-item-name">Combo 3 — 60min Massage + 30min Facial</span><span class="spa-static-dur">$228</span></div>
+      </div>
+      <!-- MENU:END -->
+    </div>
 
     <div class="booking-card" style="margin-top:34px;">
       <div class="calc-total">
