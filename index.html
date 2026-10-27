@@ -161,6 +161,7 @@
   .calc-total .lbl{ font-size:12px; letter-spacing:0.1em; text-transform:uppercase; color:var(--sand-dim); }
   .calc-total .amt{ font-family:'Playfair Display'; font-size:30px; color:var(--gold-soft); }
   .tax-note{ font-size:11.5px; color:var(--sand-dim); margin-top:8px; }
+  .calc-total[hidden], .tax-note[hidden]{ display:none; }
   .gi-input{ width:100%; background:var(--ink); border:1px solid var(--line); color:var(--sand); padding:12px 14px; font-size:13.5px; border-radius:2px; margin-bottom:14px; }
   .gi-input::placeholder{ color:var(--sand-dim); opacity:.7; }
   .field-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
@@ -306,6 +307,11 @@
         <span class="lbl" id="totalLabel">Total (0 treatments)</span>
         <span class="amt" id="totalAmount">$0</span>
       </div>
+      <div class="calc-total" id="holidayRow" hidden style="border-top:0; padding-top:6px;">
+        <span class="lbl" id="holidayLabel">Holiday rate (+30% on services)</span>
+        <span class="amt" id="holidayAmount" style="font-size:20px;">$0</span>
+      </div>
+      <p class="tax-note" id="holidayNote">Dec 24 – Jan 5: holiday rate, +30% on services</p>
       <p class="tax-note">Plus 8.9% tax. Gratuity not included 😉</p>
 
       <div class="field-row" style="margin-top:26px;">
@@ -510,6 +516,26 @@
     else header.classList.remove('scrolled');
   });
 
+  // Tarifa de fiestas: +30 % a los servicios si la fecha cae entre el 24-dic y el 5-ene (cada año).
+  // Única fuente de la tasa y la ventana en esta página; todo lo demás se calcula de aquí.
+  const HOLIDAY = { rate: 0.30, from: [12,24], to: [1,5] };
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const holidayPct = Math.round(HOLIDAY.rate * 100);
+  const holidayLabel = `Holiday rate (+${holidayPct}% on services)`;
+  const holidayNoteText = `${MONTHS[HOLIDAY.from[0]-1]} ${HOLIDAY.from[1]} – ${MONTHS[HOLIDAY.to[0]-1]} ${HOLIDAY.to[1]}: holiday rate, +${holidayPct}% on services`;
+  function isHolidayDate(iso){
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || '');
+    if (!m) return false;
+    const md = (+m[2]) * 100 + (+m[3]);
+    const from = HOLIDAY.from[0] * 100 + HOLIDAY.from[1];
+    const to = HOLIDAY.to[0] * 100 + HOLIDAY.to[1];
+    return from <= to ? (md >= from && md <= to) : (md >= from || md <= to);
+  }
+  const money = n => n.toLocaleString('en-US', { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 });
+  function holidaySurcharge(serviceSubtotal, iso){
+    return isHolidayDate(iso) ? Math.round(serviceSubtotal * HOLIDAY.rate * 100) / 100 : 0;
+  }
+
   const SPA_MENU = {
     "Massages": [
       { name: "Swedish Massage", p60: 156, p90: 216 },
@@ -646,9 +672,17 @@
   }
 
   function render(){
-    const { text, total, count } = cartSummaryText();
+    const { text, total: treatments, count } = cartSummaryText();
+    const dateValue = document.getElementById('cDate').value;
+    const holiday = holidaySurcharge(treatments, dateValue);
+    const total = treatments + holiday;
     document.getElementById('totalLabel').textContent = `Total (${count} treatment${count === 1 ? '' : 's'})`;
-    document.getElementById('totalAmount').textContent = '$' + total.toLocaleString('en-US');
+    document.getElementById('totalAmount').textContent = '$' + money(total);
+    document.getElementById('holidayRow').hidden = !holiday;
+    document.getElementById('holidayLabel').textContent = holidayLabel;
+    document.getElementById('holidayAmount').textContent = '+$' + money(holiday);
+    document.getElementById('holidayNote').textContent = holidayNoteText;
+    document.getElementById('holidayNote').hidden = !!dateValue;
 
     const name = document.getElementById('cName').value || '(name pending)';
     const phone = document.getElementById('cPhone').value || '(phone pending)';
@@ -662,8 +696,9 @@
       "Hi! I'd like to book in-home spa treatments:\n\n" +
       "Name: " + name + "\nPhone: " + phone + "\nEmail: " + email + "\nVilla/Address: " + villa + "\n" +
       "Date: " + date + "\nTime: " + time + "\n\n" +
-      "Treatments:\n" + (text || '  (none selected yet)') + "\n\n" +
-      "Estimated Total: $" + total.toLocaleString('en-US') + " USD (plus 8.9% tax, gratuity not included)"
+      "Treatments:\n" + (text || '  (none selected yet)') + "\n" +
+      (holiday ? "  - " + holidayLabel + " = $" + money(holiday) + "\n" : "") + "\n" +
+      "Estimated Total: $" + money(total) + " USD (plus 8.9% tax, gratuity not included)"
     );
     document.getElementById('requestBtn').href = `mailto:cabotravelexperiences@privatechefloscabos.com?subject=${subject}&body=${body}`;
   }
@@ -671,6 +706,7 @@
   ['cName','cPhone','cEmail','cVilla','cDate','cTime'].forEach(id => {
     document.getElementById(id).addEventListener('input', render);
   });
+  document.getElementById('cDate').addEventListener('change', render);
 
   buildAccordion();
   render();
